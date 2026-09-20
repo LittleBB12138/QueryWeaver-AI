@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import math
 import re
 import time
@@ -11,18 +12,32 @@ from typing import Any
 from .config import Settings, settings
 
 
+logger = logging.getLogger(__name__)
+
+
 class ModelClient:
     """Chat、Embedding 和 Rerank 接口客户端。"""
 
     def __init__(self, config: Settings | None = None) -> None:
         self.config = config or settings
         self._blocked_until: dict[str, float] = {}
+        self.request_attempt_count = 0
+        self.retry_count = 0
+        self.timeout_event_count = 0
+        self.connection_error_event_count = 0
 
     @property
     def enabled(self) -> bool:
         return bool(self.config.api_key)
 
-    def chat(self, system: str, user: str, *, temperature: float | None = None) -> str:
+    def chat(
+        self,
+        system: str,
+        user: str,
+        *,
+        temperature: float | None = None,
+        json_mode: bool = False,
+    ) -> str:
         payload = {
             "model": self.config.llm_model,
             "messages": [
@@ -31,7 +46,10 @@ class ModelClient:
             ],
             "temperature": self.config.temperature if temperature is None else temperature,
             "stream": False,
+            "enable_thinking": self.config.llm_enable_thinking,
         }
+        if json_mode:
+            payload["response_format"] = {"type": "json_object"}
         result = self._post(self.config.chat_url, payload)
         try:
             return str(result["choices"][0]["message"]["content"]).strip()
@@ -39,7 +57,7 @@ class ModelClient:
             raise RuntimeError("大模型响应缺少 message.content") from exc
 
     def chat_json(self, system: str, user: str) -> dict[str, Any]:
-        raw = self.chat(system, user)
+        raw = self.chat(system, user, json_mode=True)
         cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw.strip(), flags=re.I)
         try:
             return json.loads(cleaned)
@@ -103,6 +121,7 @@ class ModelClient:
         )
         last_error: Exception | None = None
         for attempt in range(self.config.max_retries + 1):
+            self.request_attempt_count += 1
             try:
                 with urllib.request.urlopen(request, timeout=self.config.timeout) as response:
                     return json.loads(response.read().decode("utf-8"))
@@ -113,11 +132,34 @@ class ModelClient:
                     break
             except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
                 last_error = exc
+                error_text = str(exc).lower()
+                if any(token in error_text for token in ("timed out", "timeout", "超时")):
+                    self.timeout_event_count += 1
+                if any(token in error_text for token in ("winerror 10054", "connection reset", "连接")):
+                    self.connection_error_event_count += 1
             if attempt < self.config.max_retries:
-                time.sleep(0.4 * (2**attempt))
+                self.retry_count += 1
+                delay = 0.8 * (2**attempt)
+                logger.warning(
+                    "model_request_retry endpoint=%s attempt=%s/%s delay_seconds=%.1f error=%s",
+                    url,
+                    attempt + 1,
+                    self.config.max_retries,
+                    delay,
+                    last_error,
+                )
+                time.sleep(delay)
         # 网络请求失败后对当前接口启用短时熔断。
         self._blocked_until[url] = time.monotonic() + 30
         raise RuntimeError(f"模型接口调用失败: {last_error}") from last_error
+
+    def metrics(self) -> dict[str, int]:
+        return {
+            "model_request_attempt_count": self.request_attempt_count,
+            "model_retry_count": self.retry_count,
+            "model_timeout_event_count": self.timeout_event_count,
+            "model_connection_error_event_count": self.connection_error_event_count,
+        }
 
     @staticmethod
     def _normalize(vector: list[float]) -> list[float]:

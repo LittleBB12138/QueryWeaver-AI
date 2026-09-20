@@ -28,13 +28,17 @@ class AuthService:
             "password": "admin123",
             "user": AuthUser("demo_admin", "admin", "系统管理员", "admin"),
         },
-        "sales": {
-            "password": "sales123",
-            "user": AuthUser("demo_current_sales", "sales", "销售分析员", "current_sales"),
+        "growth": {
+            "password": "growth123",
+            "user": AuthUser("demo_growth_ops", "growth", "用户增长运营", "growth_ops"),
         },
-        "mock": {
-            "password": "mock123",
-            "user": AuthUser("demo_analyst", "mock", "Mock 数据分析员", "analyst"),
+        "channel": {
+            "password": "channel123",
+            "user": AuthUser("demo_channel_ops", "channel", "渠道投放运营", "channel_ops"),
+        },
+        "content": {
+            "password": "content123",
+            "user": AuthUser("demo_content_ops", "content", "内容运营", "content_ops"),
         },
     }
 

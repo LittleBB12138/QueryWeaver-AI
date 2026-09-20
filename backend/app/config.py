@@ -31,6 +31,9 @@ class Settings:
         "LLM_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
     ).rstrip("/")
     llm_model: str = os.getenv("LLM_MODEL", "qwen-plus")
+    llm_enable_thinking: bool = os.getenv(
+        "LLM_ENABLE_THINKING", "false"
+    ).lower() in {"1", "true", "yes", "on"}
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "text-embedding-v4")
     embedding_dimensions: int = int(os.getenv("EMBEDDING_DIMENSIONS", "1024"))
     embedding_base_url: str = os.getenv("EMBEDDING_BASE_URL", "").rstrip("/")
@@ -91,6 +94,7 @@ class Settings:
         return {
             "api_key_configured": bool(self.api_key),
             "llm_model": self.llm_model,
+            "llm_enable_thinking": self.llm_enable_thinking,
             "embedding_model": self.embedding_model,
             "embedding_dimensions": self.embedding_dimensions,
             "rerank_model": self.rerank_model,

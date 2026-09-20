@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.log
+.pytest_cache/
 
 # 虚拟环境与内置运行时（本地重新安装）
 .venv/

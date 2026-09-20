@@ -7,9 +7,9 @@ function token() {
   return sessionStorage.getItem(TOKEN_KEY)
 }
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
+async function request<T>(path: string, options?: RequestInit, timeoutMs = 90_000): Promise<T> {
   const controller = new AbortController()
-  const timeout = window.setTimeout(() => controller.abort(), 90_000)
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs)
   let response: Response
   try {
     response = await fetch(`${API_BASE}${path}`, {
@@ -23,7 +23,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     })
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
-      throw new Error("请求超时，请检查模型接口配置后重试")
+      throw new Error("请求处理超时，后端可能仍在构建Schema索引或等待模型响应")
     }
     throw new Error("无法连接后端服务，请先启动 FastAPI（127.0.0.1:8000）")
   } finally {
@@ -60,12 +60,12 @@ export const api = {
     request<QueryResult>("/api/query", {
       method: "POST",
       body: JSON.stringify({ query, session_id: sessionId, workspace }),
-    }),
+    }, 300_000),
   clarify: (taskId: string, optionId: string) =>
     request<QueryResult>(`/api/tasks/${taskId}/clarify`, {
       method: "POST",
       body: JSON.stringify({ option_id: optionId }),
-    }),
+    }, 300_000),
   save: (taskId: string) =>
     request<{ saved: boolean }>("/api/memories", {
       method: "POST",

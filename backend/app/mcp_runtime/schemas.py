@@ -25,6 +25,7 @@ class DatabaseQueryResult(BaseModel):
     columns: list[str] = Field(default_factory=list, description="结果字段")
     rows: list[dict[str, Any]] = Field(default_factory=list, description="查询结果，最多200行")
     row_count: int = Field(default=0, description="返回结果行数")
+    execution_ms: float = Field(default=0.0, description="SQL校验与执行耗时，单位毫秒")
     error: str | None = Field(default=None, description="执行失败时的错误信息")
 
 

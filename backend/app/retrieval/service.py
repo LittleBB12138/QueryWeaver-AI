@@ -51,6 +51,15 @@ class SchemaIndex:
 
     def ensure_built(self, *, force: bool = False) -> None:
         signature = self._schema_signature()
+        if (
+            not force
+            and self.store.signature == signature
+            and self.store.documents
+            and self.store.embedding_source == self.config.embedding_model
+            and self.model_client.enabled
+        ):
+            self.embedding_source = self.store.embedding_source
+            return
         if not force and self.store.load(signature):
             source = self.store.embedding_source
             # 仅加载由当前 Embedding 模型生成的索引。
@@ -300,12 +309,12 @@ class SchemaIndex:
 
     def _build_raw_documents(self) -> list[dict[str, Any]]:
         output: list[dict[str, Any]] = []
-        database_names = sorted({table.get("database", "demo_mock") for table in SCHEMA})
+        database_names = sorted({table.get("database", "short_video_ops") for table in SCHEMA})
         for database in database_names:
             tables = [
                 item
                 for item in SCHEMA
-                if item.get("database", "demo_mock") == database
+                if item.get("database", "short_video_ops") == database
             ]
             prebuilt = [
                 table
@@ -353,7 +362,7 @@ class SchemaIndex:
                 and field["name"] in {item["left_field"], item["right_field"]}
             ]
             default_keyword_text = " ".join([
-                table.get("database", "demo_mock"), table.get("domain", ""),
+                table.get("database", "short_video_ops"), table.get("domain", ""),
                 table["id"], sql_table_name, table["label"], *table.get("business_terms", []),
                 field["name"], field["label"], field.get("description", ""),
                 *aliases, samples_text,
@@ -376,7 +385,7 @@ class SchemaIndex:
             rerank_text = str(index_content.get("rerank_text") or default_rerank_text)
             output.append({
                 "doc_id": f"{table['id']}.{field['name']}",
-                "database_id": table.get("database", "demo_mock"),
+                "database_id": table.get("database", "short_video_ops"),
                 "table_id": table["id"],
                 "table_label": table["label"],
                 "field_name": field["name"],

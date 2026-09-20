@@ -453,7 +453,7 @@ function clarificationHint(result: QueryResult) {
 
   <main v-else-if="!authUser" class="login-page">
     <section class="login-intro">
-      <div class="login-brand"><span>Q</span><strong>QueryWeaver AI</strong></div>
+      <div class="login-brand"><span>A</span><strong>QueryWeaver AI</strong></div>
       <div>
         <p class="kicker">AI DATA ASSISTANT</p>
         <h1>用自然语言，<br>读懂你的数据。</h1>
@@ -485,15 +485,20 @@ function clarificationHint(result: QueryResult) {
             <span><strong>admin</strong><small>管理员 · 全部数据</small></span>
             <code>admin123</code>
           </button>
-          <button type="button" @click="useMockAccount('sales', 'sales123')">
-            <span class="account-icon user">销</span>
-            <span><strong>sales</strong><small>电商运营 · ecommerce_ops</small></span>
-            <code>sales123</code>
+          <button type="button" @click="useMockAccount('growth', 'growth123')">
+            <span class="account-icon user">增</span>
+            <span><strong>growth</strong><small>用户增长 · 18张表</small></span>
+            <code>growth123</code>
           </button>
-          <button type="button" @click="useMockAccount('mock', 'mock123')">
-            <span class="account-icon mock">示</span>
-            <span><strong>mock</strong><small>基础演示 · demo_mock</small></span>
-            <code>mock123</code>
+          <button type="button" @click="useMockAccount('channel', 'channel123')">
+            <span class="account-icon mock">渠</span>
+            <span><strong>channel</strong><small>渠道投放 · 16张表</small></span>
+            <code>channel123</code>
+          </button>
+          <button type="button" @click="useMockAccount('content', 'content123')">
+            <span class="account-icon mock">内</span>
+            <span><strong>content</strong><small>内容运营 · 19张表</small></span>
+            <code>content123</code>
           </button>
         </div>
         <small class="login-note">Mock 登录仅用于本地学习，不适合生产环境。</small>
@@ -571,7 +576,7 @@ function clarificationHint(result: QueryResult) {
             </div>
 
             <div class="assistant-message">
-              <div class="message-avatar assistant">Q</div>
+              <div class="message-avatar assistant">A</div>
               <div class="message-body assistant-body">
                 <div class="answer-heading" :class="{ 'qa-heading': turn.result.route !== 'database_query' }">
                   <div><small>QueryWeaver AI</small><strong v-if="turn.result.route === 'database_query'">{{ turn.result.status === "failed" ? "处理失败" : turn.result.status === "waiting_clarification" ? "需要补充信息" : "查询完成" }}</strong></div>
@@ -661,7 +666,7 @@ function clarificationHint(result: QueryResult) {
           </div>
 
           <div v-if="loading" class="assistant-message loading-message">
-            <div class="message-avatar assistant">Q</div>
+            <div class="message-avatar assistant">A</div>
             <div class="loading-copy"><span></span><div><strong>正在分析</strong><small>理解问题并检索相关 Schema…</small></div></div>
           </div>
         </div>

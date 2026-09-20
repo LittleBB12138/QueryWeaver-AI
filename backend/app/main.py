@@ -1,28 +1,15 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api.routes import router
-from .config import BASE_DIR
-from .demo_data import seed_demo_data
-
-
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    database_dir = BASE_DIR / "data" / "databases" / "demo_mock"
-    if not database_dir.exists() or not any(database_dir.glob("*.csv")):
-        seed_demo_data(database_dir=database_dir)
-    yield
 
 
 app = FastAPI(
     title="QueryWeaver AI API",
-    version="0.2.0",
-    description="基于LangGraph、支持Human-in-the-loop的轻量Text-to-SQL服务",
-    lifespan=lifespan,
+    version="1.0.0",
+    description="面向短视频运营场景的自然语言问数服务",
 )
 app.add_middleware(
     CORSMiddleware,

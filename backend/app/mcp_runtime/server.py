@@ -32,7 +32,7 @@ def create_local_mcp_server(
     scope = access_scope or AccessController().resolve(None)
     server = MCPServer(
         name="queryweaver-local-tools",
-        title="QueryWeaver AI 本地工具服务",
+        title="QueryWeaver本地工具服务",
         description="提供本地数据库只读查询和基础时间计算工具。",
         instructions="调用数据库工具前先根据Schema图生成一条只读DuckDB SQL。",
     )
@@ -68,7 +68,7 @@ def create_local_mcp_server(
         annotations=READ_ONLY,
     )(build_pie_chart)
 
-    databases = sorted({str(table.get("database") or "demo_mock") for table in SCHEMA})
+    databases = sorted({str(table.get("database") or "short_video_ops") for table in SCHEMA})
     for database in databases:
         if not scope.allows_database(database):
             continue

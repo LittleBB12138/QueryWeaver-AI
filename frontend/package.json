@@ -2,6 +2,7 @@
   "name": "queryweaver-ai-frontend",
   "private": true,
   "version": "0.1.0",
+  "description": "QueryWeaver AI 前端：自然语言问数平台",
   "type": "module",
   "scripts": {
     "dev": "vite",

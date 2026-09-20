@@ -206,7 +206,7 @@ class QueryWeaverService:
     ) -> None:
         scope = self.access_controller.resolve(user_id)
         table = next((item for item in SCHEMA if item["id"] == table_id), None)
-        database = str(table.get("database") or "demo_mock") if table else ""
+        database = str(table.get("database") or "short_video_ops") if table else ""
         if not table or not scope.allows_table(database, table_id):
             raise PermissionError("无权保存该字段")
         if not any(field["name"] == name for field in table["fields"]):

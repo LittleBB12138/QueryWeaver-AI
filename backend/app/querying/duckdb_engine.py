@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import time
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
@@ -36,6 +37,7 @@ class DuckDbEngine:
         sql: str,
         access_scope: AccessScope | None = None,
     ) -> SqlExecution:
+        started_at = time.perf_counter()
         try:
             safe_sql = self._validate_sql(database, sql, access_scope)
             with self.connect(database) as connection:
@@ -46,9 +48,20 @@ class DuckDbEngine:
                     {column: self._json_value(value) for column, value in zip(columns, row)}
                     for row in raw_rows[:200]
                 ]
-            return SqlExecution(safe_sql, True, columns, rows)
+            return SqlExecution(
+                safe_sql,
+                True,
+                columns,
+                rows,
+                execution_ms=round((time.perf_counter() - started_at) * 1000, 3),
+            )
         except (ValueError, ParseError, duckdb.Error, OSError) as exc:
-            return SqlExecution(sql, False, error=str(exc))
+            return SqlExecution(
+                sql,
+                False,
+                error=str(exc),
+                execution_ms=round((time.perf_counter() - started_at) * 1000, 3),
+            )
 
     @contextmanager
     def connect(self, database: str) -> Iterator[duckdb.DuckDBPyConnection]:
@@ -107,7 +120,7 @@ class DuckDbEngine:
         database_tables = [
             table
             for table in SCHEMA
-            if table.get("database", "demo_mock") == database
+            if table.get("database", "short_video_ops") == database
         ]
         allowed = {
             physical_table_name(table): table["id"]
