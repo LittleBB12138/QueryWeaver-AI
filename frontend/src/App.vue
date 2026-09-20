@@ -453,7 +453,7 @@ function clarificationHint(result: QueryResult) {
 
   <main v-else-if="!authUser" class="login-page">
     <section class="login-intro">
-      <div class="login-brand"><span>A</span><strong>QueryWeaver AI</strong></div>
+      <div class="login-brand"><span>Q</span><strong>QueryWeaver AI</strong></div>
       <div>
         <p class="kicker">AI DATA ASSISTANT</p>
         <h1>用自然语言，<br>读懂你的数据。</h1>
@@ -464,7 +464,7 @@ function clarificationHint(result: QueryResult) {
 
     <section class="login-side">
       <form class="login-card" @submit.prevent="loginUser">
-        <header><span class="login-mark">A</span><div><h2>欢迎回来</h2><p>登录 QueryWeaver AI</p></div></header>
+        <header><span class="login-mark">Q</span><div><h2>欢迎回来</h2><p>登录 QueryWeaver AI</p></div></header>
         <label>
           <span>账号</span>
           <input v-model="loginUsername" autocomplete="username" placeholder="请输入账号">
@@ -509,7 +509,7 @@ function clarificationHint(result: QueryResult) {
   <div v-else class="app-layout">
     <aside class="history-sidebar" :class="{ open: leftOpen }">
       <div class="brand-row">
-        <span class="brand-symbol">A</span>
+        <span class="brand-symbol">Q</span>
         <div><strong>QueryWeaver AI</strong><small>AI 数据分析</small></div>
       </div>
 
@@ -576,7 +576,7 @@ function clarificationHint(result: QueryResult) {
             </div>
 
             <div class="assistant-message">
-              <div class="message-avatar assistant">A</div>
+              <div class="message-avatar assistant">Q</div>
               <div class="message-body assistant-body">
                 <div class="answer-heading" :class="{ 'qa-heading': turn.result.route !== 'database_query' }">
                   <div><small>QueryWeaver AI</small><strong v-if="turn.result.route === 'database_query'">{{ turn.result.status === "failed" ? "处理失败" : turn.result.status === "waiting_clarification" ? "需要补充信息" : "查询完成" }}</strong></div>
@@ -666,7 +666,7 @@ function clarificationHint(result: QueryResult) {
           </div>
 
           <div v-if="loading" class="assistant-message loading-message">
-            <div class="message-avatar assistant">A</div>
+            <div class="message-avatar assistant">Q</div>
             <div class="loading-copy"><span></span><div><strong>正在分析</strong><small>理解问题并检索相关 Schema…</small></div></div>
           </div>
         </div>
